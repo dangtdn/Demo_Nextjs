@@ -4,7 +4,7 @@ import FormLogin from '../../components/Forms/FormLogin'
 
 const Login: NextPage = () => {
   return (
-    <div>
+    <div className='content-wrapper'>
         <FormLogin/>
     </div>
   )

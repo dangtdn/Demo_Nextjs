@@ -1,0 +1,57 @@
+@import "../helps.scss";
+
+.content-wrapper {
+    display: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #f3f3f3;
+
+    .login-wrapper {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        box-shadow: 2px 2px 7px #ddd;
+        color: tc('textBlue');
+        background: c('bgPrimary');
+        width: 400px;
+        padding: 50px;
+
+        .box-title {
+            font-size: 20px;
+            font-weight: 400;
+            margin: 0px 0px 50px;
+        }
+
+        .form-login {
+            border-radius: 4px;
+
+            .form-group {
+    
+              label {
+                  color: #1589d6 !important; 
+              }
+          
+              input {
+                  border-color: #1589d6 !important;
+              }
+            }
+
+            button {
+              width: 100%;
+            }
+        }
+    }
+}
+
+@media only screen and (max-width: 480px) and (min-width: 310px){
+    
+    .content_wrapper {
+        
+        .login-wrapper {
+            width: 100%;
+        }
+    }
+}

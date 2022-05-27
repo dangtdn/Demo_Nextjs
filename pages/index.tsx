@@ -1,10 +1,13 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
-import styles from '../styles/Home.module.scss'
+import { useRecoilValue } from 'recoil'
+import styles from '../styles/components/Home.module.scss'
 import Post from './post'
+import { newListWorkspaceState } from '../recoil/workspacesState'
 
 const Home: NextPage = () => {
+  const workspaces = useRecoilValue(newListWorkspaceState);
   return (
     <div className={styles.container}>
       <Head>

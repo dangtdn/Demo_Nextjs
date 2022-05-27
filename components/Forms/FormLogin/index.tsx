@@ -1,92 +1,92 @@
-import React, { useState } from 'react'
-// import './style.scss'
+import React, { useEffect, useState } from 'react'
+import { MDBContainer, MDBRow, MDBCol, MDBBtn, MDBInput } from "mdbreact";
+import { Button } from 'react-bootstrap';
+import authServices from '../../../services/authServices';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 function FormLogin() {
-    let [msg, setMsg] = useState("");
-    let [status, setStatus] = useState(0);
-    let [isDisable, setIsDisable] = useState(false);
-    let [isLogin, setIsLogin] = useState(false);
+  const router = useRouter()
+  const [msg, setMsg] = useState("");
+  const [status, setStatus] = useState(0);
+  const [isLogin, setIsLogin] = useState(false);
+  const [data, setData] = useState({});
+
+  useEffect(() => {
+    if(isLogin) {
+      router.push('/');
+    }
+  }, [isLogin]);
+
+  useEffect(() => {
+    if (status === 500) setMsg("Email không chính xác");
+    else if (status === 401) setMsg("Password không chính xác");
+  }, [status]);
+
+  const handleChange = (e: any): void => {
+    const value = e.target.name;
+    
+    const newValue = {
+      ...data,
+      [e.target.name]: e.target.value
+    }
+    setData({...newValue}); 
+  };
+
+  const handleSubmit = async () => {
+    console.log(data);
+    // try {
+    //   const res: any = await authServices.login(data);
+    //   localStorage.setItem("accessToken", res.token);
+
+    //   setIsLogin(true);
+    // }catch(err: any) {
+    //   setStatus(err.response.status);
+    // }
+  }
 
   return (
-    <div className="content_wrapper">
-      <div className="login-wrapper">
-        <h1 className="box-title text-center">
-            {/* {t('content.title')} */}
-            Title
-        </h1>
+    <div className="login-wrapper">
+        <h1 className="box-title text-center">Login</h1>
         <div className="form-login">
-          <form >
-            <div className="form__group field">
-              <input
-                type="input"
-                className="form__field"
-                placeholder="Email*"
+          <form onSubmit={handleSubmit}>
+            <MDBInput
                 name="email"
-                id="email"
-                required
+                label="Email *"
+                group
+                type="text"
+                validate
+                error="wrong"
+                success="right"
+                onChange={handleChange}
               />
-              <label htmlFor="email" className="form__label">
-              {/* {t('content.title__email')} */}
-              Email
-              </label>
-            </div>
-            <div className="form__group field">
-              <input
-                type="password"
-                className="form__field"
-                placeholder="Password*"
+            <MDBInput
                 name="password"
-                id="password"
-                required
+                label="Password *"
+                group
+                type="text"
+                validate
+                error="wrong"
+                success="right"
+                className='my-input'
+                onChange={handleChange}
               />
-              <label htmlFor="password" className="form__label">
-              {/* {t('content.title__password')} */}
-              Password
-              </label>
+            <div className="text-center">
+              <Button color="primary" type="button">
+                <span>Login</span>
+              </Button>
             </div>
-            <div className="form-footer">
-              <div className="text-center pt-3">
-                {status != 0 ? (
-                  <div className="d-block border border-danger text-danger p-3 my-2" style={{backgroundColor: 'rgba(255, 82, 82, 0.03)', fontSize: '15px'}}>
-                    {/* {t('content.error')} */}
-                    errors
-                  </div>
-                ) : (
-                  ""
-                )}
-              </div>
-              {true ? (
-                <button
-                  type="submit"
-                  className="w-100 btn-login"
-                //   disabled={!isValid}
-                >
-                  {/* {t('content.button-login')} */}
-                  Login
-                </button>
-              ) : (
-                <button
-                  type="submit"
-                  className="w-100 btn-login primary text-white"
-                //   disabled={!isValid}
-                >
-                  {/* {t('content.button-login')} */}
-                  Login
-                </button>
-              )}
-              <div className="text-center">
-                <a className="link-forget" href="#">
-                {/* {t('content.link__forgot-password')} */}
-                forgot?
-                </a>
-              </div>
-              {/* <ChooseLanguage/> */}
-            </div>
+            <p className='text-center'><a href="">forgot passwaord</a></p>
+            <p>Choose your language</p>
+            <select className="browser-default custom-select">
+              <option>Choose your option</option>
+              <option value="1">Option 1</option>
+              <option value="2">Option 2</option>
+              <option value="3">Option 3</option>
+            </select>
           </form>
         </div>
       </div>
-    </div>
-
   )
 }
 
