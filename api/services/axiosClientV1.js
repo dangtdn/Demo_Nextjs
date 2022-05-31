@@ -1,5 +1,5 @@
 import axios from "axios";
-import { token } from "../configs/settings";
+import { token } from "../../configs/settings";
 
 const axiosClientV1 = axios.create({
     baseURL: process.env.REACT_APP_API_URL_V1,

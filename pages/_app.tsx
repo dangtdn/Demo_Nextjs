@@ -1,29 +1,38 @@
 import '../styles/main.scss';
-// import 'bootstrap/dist/css/bootstrap.min.css';
-import '@fortawesome/fontawesome-free/css/all.min.css';
-import 'bootstrap-css-only/css/bootstrap.min.css';
-import 'mdbreact/dist/css/mdb.css';
 import type { AppProps } from 'next/app'
-import { FC, useEffect } from 'react';
+import { FC, useEffect, useState } from 'react';
 import Head from '../components/common/Head';
 import { RecoilRoot } from "recoil";
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { useRouter } from 'next/router';
 
 const Noop: FC = ({ children }) => <>{children}</>
+const queryClient = new QueryClient();
 
 function MyApp({ Component, pageProps }: AppProps) {
-  const Layout = (Component as any).Layout || Noop
+  const Layout = (Component as any).Layout || Noop;
+  const router = useRouter()
+  const [token, setToken] = useState();
+  
   useEffect(() => {
     document.body.classList?.remove('loading')
-  }, [])
+    if (localStorage.getItem("accessToken")) {
+      setToken(localStorage.getItem("accessToken"));
+      return;
+    }
+    else {
+      router.push('/login');
+    }
+  },[]);
 
   return (
     <RecoilRoot>
-      <Head />
-      {/* <ManagedUIContext> */}
+      <QueryClientProvider client={queryClient}>
+        {token && <Head />}
         <Layout pageProps={pageProps}>
           <Component {...pageProps} />
         </Layout>
-      {/* </ManagedUIContext> */}
+      </QueryClientProvider>
     </RecoilRoot>
   )
 }

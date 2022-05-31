@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from 'react'
-import { MDBContainer, MDBRow, MDBCol, MDBBtn, MDBInput } from "mdbreact";
-import { Button } from 'react-bootstrap';
-import authServices from '../../../services/authServices';
+import authServices from '../../../api/services/authServices';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { FormControl, Grid, InputLabel, MenuItem, Select, SelectChangeEvent, TextField } from '@mui/material';
+import Button from '@mui/material/Button';
+import { request } from '../../../api/Utils/axios-ultis';
+import { useQuery } from 'react-query';
+import axios from 'axios';
 
 function FormLogin() {
   const router = useRouter()
   const [msg, setMsg] = useState("");
   const [status, setStatus] = useState(0);
   const [isLogin, setIsLogin] = useState(false);
-  const [data, setData] = useState({});
+  const [dataInput, setDataInput] = useState({});
+  const [language, setLanguage] = React.useState('English');
 
   useEffect(() => {
     if(isLogin) {
@@ -23,67 +27,102 @@ function FormLogin() {
     else if (status === 401) setMsg("Password không chính xác");
   }, [status]);
 
-  const handleChange = (e: any): void => {
-    const value = e.target.name;
-    
-    const newValue = {
-      ...data,
-      [e.target.name]: e.target.value
-    }
-    setData({...newValue}); 
+  const handleChangeSelect = (e: SelectChangeEvent): void => {
+    setLanguage(e.target.value);
   };
 
-  const handleSubmit = async () => {
-    console.log(data);
-    // try {
-    //   const res: any = await authServices.login(data);
-    //   localStorage.setItem("accessToken", res.token);
+  const handleChange = (e: any): void => {
+    setDataInput({...dataInput, [e.target.name]: e.target.value}); 
+  };
 
-    //   setIsLogin(true);
-    // }catch(err: any) {
-    //   setStatus(err.response.status);
-    // }
+  const fetchLoginAPI = (values: Object) => {
+    // const rs =  await authServices.login(values);
+    // return rs;
+    return axios
+    .post("https://dev-api.hexabase.com/api/v0/login", values)
+    .then((res: any) => res.data);
   }
+
+  // const { isLoading, data: accessToken, isError, error, isFetching } = useQuery("hexa-login", fetchLoginAPI);
+
+  const handleSubmit = async () => {
+    console.log(dataInput);
+    
+    try {
+      const response: any = await fetchLoginAPI(dataInput);
+      console.log('auth: ',response.token);
+      
+      localStorage.setItem("accessToken", response.token);
+
+      setIsLogin(true);
+    }catch(err: any) {
+      setStatus(err.response.status);
+    }
+  }
+
+  // if (isLoading || isFetching) {
+  //   return <h2>Loading...</h2>
+  // }else {
+  //   // localStorage.setItem("accessToken", accessToken.token);
+  //   console.log(accessToken);
+  //   // router.push('/');
+  // }
+
+  // if (isError) {
+  //   return <h2>{error.message}</h2>
+  // }
 
   return (
     <div className="login-wrapper">
-        <h1 className="box-title text-center">Login</h1>
+        <h1 className="box-title">Login</h1>
         <div className="form-login">
           <form onSubmit={handleSubmit}>
-            <MDBInput
-                name="email"
-                label="Email *"
-                group
-                type="text"
-                validate
-                error="wrong"
-                success="right"
-                onChange={handleChange}
-              />
-            <MDBInput
-                name="password"
-                label="Password *"
-                group
-                type="text"
-                validate
-                error="wrong"
-                success="right"
-                className='my-input'
-                onChange={handleChange}
-              />
-            <div className="text-center">
-              <Button color="primary" type="button">
+            <FormControl fullWidth>
+              <TextField
+              id="email"
+              name="email"
+              label="Email *"
+              type="text"
+              variant="standard"
+              fullWidth
+              onChange={handleChange}
+            />
+            </FormControl>
+            <FormControl fullWidth>
+                <TextField
+              id="password"
+              name="password"
+              label="Password *"
+              type="text"
+              variant="standard"
+              fullWidth
+              onChange={handleChange}
+            />
+            </FormControl>
+              <Button 
+              fullWidth 
+              variant='contained' 
+              sx={{marginTop: 3}}
+              onClick={() => handleSubmit()}
+              >
                 <span>Login</span>
               </Button>
-            </div>
-            <p className='text-center'><a href="">forgot passwaord</a></p>
-            <p>Choose your language</p>
-            <select className="browser-default custom-select">
-              <option>Choose your option</option>
-              <option value="1">Option 1</option>
-              <option value="2">Option 2</option>
-              <option value="3">Option 3</option>
-            </select>
+            <p className='link-forgot'><Link href='#'>forgot passwaord</Link></p>
+            <p style={{marginBottom: '0'}}>Choose your language</p>
+            <FormControl variant="standard" sx={{ m: 1, minWidth: 150, ml: 0 }}>
+              <Select
+                labelId="demo-simple-select-standard-label"
+                id="demo-simple-select-standard"
+                value={language}
+                onChange={handleChangeSelect}
+              >
+                {/* <MenuItem value="">
+                  <em>None</em>
+                </MenuItem> */}
+                <MenuItem value='en'>English</MenuItem>
+                <MenuItem value='jp'>Japanses</MenuItem>
+              </Select>
+            </FormControl>
           </form>
         </div>
       </div>
