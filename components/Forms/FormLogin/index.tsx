@@ -7,6 +7,14 @@ import Button from '@mui/material/Button';
 import { request } from '../../../api/Utils/axios-ultis';
 import { useQuery } from 'react-query';
 import axios from 'axios';
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Controller, useForm } from "react-hook-form";
+
+interface FormData {
+  email: string;
+  password: string;
+}
 
 function FormLogin() {
   const router = useRouter()
@@ -45,20 +53,60 @@ function FormLogin() {
 
   // const { isLoading, data: accessToken, isError, error, isFetching } = useQuery("hexa-login", fetchLoginAPI);
 
-  const handleSubmit = async () => {
-    console.log(dataInput);
+  // const handleSubmit = async () => {
+  //   console.log(dataInput);
     
-    try {
-      const response: any = await fetchLoginAPI(dataInput);
-      console.log('auth: ',response.token);
+  //   try {
+  //     const response: any = await fetchLoginAPI(dataInput);
+  //     console.log('auth: ',response.token);
       
-      localStorage.setItem("accessToken", response.token);
+  //     localStorage.setItem("accessToken", response.token);
 
-      setIsLogin(true);
-    }catch(err: any) {
-      setStatus(err.response.status);
-    }
-  }
+  //     setIsLogin(true);
+  //   }catch(err: any) {
+  //     setStatus(err.response.status);
+  //   }
+  // }
+  const validationSchema = yup
+  .object()
+  .shape({
+    email: yup
+      .string()
+      .email("Enter a valid email")
+      .required("Email is required"),
+    password: yup
+      .string()
+      .min(8, "Password should be of minimum 8 characters length")
+      .required("Password is required")
+  })
+  .required();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<FormData>({
+    defaultValues: {
+      email: "",
+      password: ""
+    },
+    reValidateMode: "onSubmit",
+    resolver: yupResolver(validationSchema)
+  });
+  const onSubmit = handleSubmit(async (data: any) => {
+    console.log(data)
+    
+      try {
+        const response: any = await fetchLoginAPI(data);
+        console.log('auth: ',response.token);
+        
+        localStorage.setItem("accessToken", response.token);
+  
+        setIsLogin(true);
+      }catch(err: any) {
+        setStatus(err.response.status);
+      }
+  });
+
 
   // if (isLoading || isFetching) {
   //   return <h2>Loading...</h2>
@@ -76,30 +124,55 @@ function FormLogin() {
     <div className="login-wrapper">
         <h1 className="box-title">Login</h1>
         <div className="form-login">
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={onSubmit}>
+        <Controller
+          control={control}
+          name="email"
+          render={({
+            field: { onChange, onBlur, value, name, ref },
+            fieldState: { invalid, isTouched, isDirty, error },
+            formState
+          }) => (
             <FormControl fullWidth>
               <TextField
-              id="email"
-              name="email"
-              label="Email *"
-              type="text"
-              variant="standard"
-              fullWidth
-              onChange={handleChange}
-            />
+                id="standard-basic"
+                label="Email *"
+                variant="standard"
+                fullWidth
+                onBlur={onBlur}
+                onChange={onChange}
+                value={value}
+                error={invalid}
+                helperText={error?.message}
+              />
             </FormControl>
+          )}
+        />
+        <Controller
+          control={control}
+          name="password"
+          render={({
+            field: { onChange, onBlur, value, name, ref },
+            fieldState: { invalid, isTouched, isDirty, error },
+            formState
+          }) => (
             <FormControl fullWidth>
-                <TextField
-              id="password"
-              name="password"
+            <TextField
+              id="standard-basic"
               label="Password *"
-              type="text"
               variant="standard"
               fullWidth
-              onChange={handleChange}
+              onBlur={onBlur}
+              onChange={onChange}
+              value={value}
+              error={invalid}
+              helperText={error?.message}
             />
             </FormControl>
+          )}
+        />
               <Button 
+              type='submit'
               fullWidth 
               variant='contained' 
               sx={{marginTop: 3}}

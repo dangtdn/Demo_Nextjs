@@ -5,6 +5,7 @@ import Head from '../components/common/Head';
 import { RecoilRoot } from "recoil";
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { useRouter } from 'next/router';
+import { ManagedUIContext } from '../components/ui/context';
 
 const Noop: FC = ({ children }) => <>{children}</>
 const queryClient = new QueryClient();
@@ -15,9 +16,10 @@ function MyApp({ Component, pageProps }: AppProps) {
   const [token, setToken] = useState();
   
   useEffect(() => {
-    document.body.classList?.remove('loading')
-    if (localStorage.getItem("accessToken")) {
-      setToken(localStorage.getItem("accessToken"));
+    document.body.classList?.remove('loading');
+    const lcStorage: any = localStorage.getItem("accessToken");
+    if (lcStorage) {
+      setToken(lcStorage);
       return;
     }
     else {
@@ -25,13 +27,20 @@ function MyApp({ Component, pageProps }: AppProps) {
     }
   },[]);
 
+  useEffect(() => {
+    console.log('cheack: ',token);
+    
+  }, [token]);
+
   return (
     <RecoilRoot>
       <QueryClientProvider client={queryClient}>
-        {token && <Head />}
-        <Layout pageProps={pageProps}>
-          <Component {...pageProps} />
-        </Layout>
+        <ManagedUIContext>
+          {token ? <Head /> : ''}
+          <Layout pageProps={pageProps}>
+            <Component {...pageProps} />
+          </Layout>
+        </ManagedUIContext>
       </QueryClientProvider>
     </RecoilRoot>
   )
