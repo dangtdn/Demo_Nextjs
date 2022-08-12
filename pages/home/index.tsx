@@ -2,7 +2,7 @@ import { NextPage } from "next";
 import React from "react";
 import FormLogin from "../../components/Forms/FormLogin";
 
-const Login: NextPage = () => {
+const Home: NextPage = () => {
   return (
     <div className="content-wrapper">
       <FormLogin />
@@ -10,4 +10,4 @@ const Login: NextPage = () => {
   );
 };
 
-export default Login;
+export default Home;
